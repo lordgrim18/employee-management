@@ -1,8 +1,9 @@
 import express from "express";
 // import employeeRouter from "./employee_router";
 import employeeRouter from "./routes/employee.route";
-import loggerMiddleware from "./loggerMiddleware";
+import loggerMiddleware from "./middlewares/loggerMiddleware";
 import datasource from "./db/data-source";
+import { errorMiddleware } from "./middlewares/errorMidlleware";
 
 
 const server = express();
@@ -15,6 +16,8 @@ server.get("/", (req, res) => {
   console.log(req.url);
   res.status(200).send("Hello world typescript");
 });
+
+server.use(errorMiddleware);
 
 (async () => {
   try {

@@ -9,19 +9,28 @@ class EmployeeRepository {
     }
 
     async findMany(): Promise<Employee[]> {
-        return this.repository.find()
+        return this.repository.find({
+            relations: {
+                address: true
+            }
+        })
     }
 
     async findOneById(id: number): Promise<Employee> {
-        return this.repository.findOneBy({ id }); 
+        return this.repository.findOne({
+            where: { id },
+            relations: {
+                address: true
+            }
+        }); 
     }
 
     async update(id:number, employee: Employee): Promise<void> {
         await this.repository.save({id, ...employee});
     }
 
-    async delete(id:number): Promise<void> {
-        await this.repository.delete({ id });
+    async delete(employee: Employee): Promise<void> {
+        await this.repository.remove(employee);
     }
 }
 
