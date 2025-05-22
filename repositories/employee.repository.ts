@@ -25,6 +25,10 @@ class EmployeeRepository {
         }); 
     }
 
+    async findByEmail(email: string): Promise<Employee> {
+        return this.repository.findOneBy({ email });
+    }
+
     async update(id:number, employee: Employee): Promise<void> {
         await this.repository.save({id, ...employee});
     }

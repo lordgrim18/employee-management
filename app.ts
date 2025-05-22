@@ -4,13 +4,16 @@ import employeeRouter from "./routes/employee.route";
 import loggerMiddleware from "./middlewares/loggerMiddleware";
 import datasource from "./db/data-source";
 import { errorMiddleware } from "./middlewares/errorMidlleware";
+import authRouter from "./routes/auth.route";
+import { authMiddleware } from "./middlewares/auth.middleware";
 
 
 const server = express();
 server.use(express.json());
 server.use(loggerMiddleware);
 
-server.use("/employee", employeeRouter);
+server.use("/employee", authMiddleware, employeeRouter);
+server.use("/auth", authRouter);
 
 server.get("/", (req, res) => {
   console.log(req.url);
