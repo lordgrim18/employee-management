@@ -80,10 +80,15 @@ class EmployeeController {
         
     }
 
-    deleteEmployee = async (req: Request, res: Response) => {
-        const id = Number(req.params.id);
-        await this.employeeService.deleteEmployee(id);
-        res.status(200).send()
+    deleteEmployee = async (req: Request, res: Response, next: NextFunction) => {
+        try{
+            const id = Number(req.params.id);
+            await this.employeeService.deleteEmployee(id);
+            res.status(200).send()
+        } catch (err) {
+            next(err);
+        }
+        
     }
 }
 

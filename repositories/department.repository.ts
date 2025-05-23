@@ -27,7 +27,7 @@ class DepartmentRepository {
     }
 
     async delete(department: Department): Promise<void> {
-        await this.repository.remove(department);
+        await this.repository.softRemove(department);
     }
 
 }

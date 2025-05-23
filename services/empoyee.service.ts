@@ -80,6 +80,8 @@ class EmployeeService {
             existingAddress.pincode = employee.address.pincode;
             newEmployee.address = existingAddress;
             await this.employeeRepository.update(id, newEmployee)
+        } else {
+            throw new HttpException(404, "Employee not found");
         }
     }
 
