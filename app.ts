@@ -6,9 +6,12 @@ import datasource from "./db/data-source";
 import { errorMiddleware } from "./middlewares/errorMidlleware";
 import authRouter from "./routes/auth.route";
 import { authMiddleware } from "./middlewares/auth.middleware";
+import { LoggerService } from "./services/logger.service";
 
 
 const server = express();
+const logger = LoggerService.getInstance('app()');
+
 server.use(express.json());
 server.use(loggerMiddleware);
 
@@ -25,14 +28,14 @@ server.use(errorMiddleware);
 (async () => {
   try {
     await datasource.initialize();
-    console.log('connected');
+    logger.info('connected');
   } catch {
-    console.error('Failed to connect to DB');
+    logger.error('Failed to connect to DB');
     process.exit(1);
   }
 
     server.listen(3000, () => {
-    console.log("server listening to 3000");
+    logger.info("server listening to 3000");
   });
 })();
 
