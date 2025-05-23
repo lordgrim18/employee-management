@@ -7,6 +7,12 @@ class Address extends AbstractEntity {
     @Column()
     line1: string;
 
+    @Column({nullable: true})
+    line2: string;
+
+    @Column({nullable: true})
+    houseNo: string;
+
     @Column()
     pincode: string;
 

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne} from "typeorm"
+import { Column, Entity, Generated, JoinColumn, ManyToOne, OneToOne} from "typeorm"
 import AbstractEntity from "./abstract.entity";
 import Address from "./address.entity";
 import Department from "./department.entity";
@@ -8,6 +8,12 @@ export enum EmployeeRole {
   UX = 'UX',
   DEVELOPER = 'DEVELOPER',
   HR = 'HR'
+}
+
+export enum STATUS {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  PROBATION = 'PROBATION'
 }
 
 
@@ -40,9 +46,25 @@ class Employee extends AbstractEntity {
     @ManyToOne(() => Department, (department) => department.employees)
     department: Department
 
-
     @Column()
     departmentId: number;
+
+    @Column({unique: true})
+    @Generated("uuid")
+    employeeId: string;
+
+    @Column({ type: 'date' })
+    dateOfJoining: string
+
+    @Column()
+    experience: number;
+
+    @Column({
+      type: 'enum',
+      enum: STATUS,
+      default: STATUS.ACTIVE
+    })
+    status: STATUS
   }
   
   export default Employee;

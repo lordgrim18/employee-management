@@ -1,7 +1,7 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString, MinLength, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import UpdateAddressDto from "./update-address.dto";
-import { EmployeeRole } from "../entities/employee.entity";
+import { EmployeeRole, STATUS } from "../entities/employee.entity";
 
 export class UpdateEmployeeDto {
   @IsNotEmpty()
@@ -27,4 +27,16 @@ export class UpdateEmployeeDto {
   @IsNotEmpty()
   @IsNumber()
   departmentId: number;
+
+  @IsNotEmpty()
+  @IsString()
+  dateOfJoining: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  experience: number;
+
+  @IsNotEmpty()
+  @IsEnum(STATUS)
+  status: STATUS;
 }
