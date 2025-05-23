@@ -4,9 +4,15 @@ import Address from "../entities/address.entity";
 import Employee, { EmployeeRole } from "../entities/employee.entity";
 import EmployeeRepository from "../repositories/employee.repository";
 import bcrypt from 'bcrypt';
+import { LoggerService } from "./logger.service";
+
+
 
 class EmployeeService {
-    constructor(private employeeRepository: EmployeeRepository) {}
+    private logger: LoggerService;
+    constructor(private employeeRepository: EmployeeRepository) {
+        this.logger = LoggerService.getInstance(EmployeeService.name)
+    }
 
     async getAllEmployees(): Promise<Employee[]> {
         return this.employeeRepository.findMany();
@@ -14,7 +20,7 @@ class EmployeeService {
 
     async getEmployeeById(id: number): Promise<Employee> {
         let employee = await this.employeeRepository.findOneById(id);
-        console.log(employee)
+        this.logger.info(employee);
         if(!employee) {
             throw new Error("Employee not found");
         }

@@ -1,5 +1,7 @@
 // File: src/service/airbag.service.ts
 
+import { LoggerService } from "./logger.service";
+
 /**
  * Interface for crash sensor
  */
@@ -35,10 +37,13 @@ export interface CrashSensor {
    * Service responsible for deploying the airbag in isolation
    */
   export class AirbagService {
+    private logger: LoggerService;
     constructor(
       private sensor: CrashSensor,
       private igniter: AirbagIgniter
-    ) {}
+    ) {
+      this.logger = LoggerService.getInstance(AirbagService.name);
+    }
   
     /**
      * Deploys the airbag if a crash is detected

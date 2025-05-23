@@ -29,7 +29,6 @@ export const authMiddleware = ( req:Request, res:Response, next: NextFunction ) 
     try {
         const payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
         req.user = payload;
-        console.log(payload);
     } catch {
         throw new HttpException(401, "Invalid or expired token");
     }
