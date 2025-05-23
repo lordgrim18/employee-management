@@ -59,23 +59,30 @@ class EmployeeController {
 
     }
 
-    updateEmployee = async (req: Request, res: Response) => {
-        const id = Number(req.params.id);
+    updateEmployee = async (req: Request, res: Response, next:NextFunction) => {
+        try {
+            const id = Number(req.params.id);
 
-        const updateEmployeeDto = plainToInstance(UpdateEmployeeDto, req.body);
-        const errors = await validate(updateEmployeeDto);
-        if (errors.length > 0) {
-            console.log(JSON.stringify(errors));
-            throw new HttpException(400, errors as unknown as string);
+            const updateEmployeeDto = plainToInstance(UpdateEmployeeDto, req.body);
+            const errors = await validate(updateEmployeeDto);
+            if (errors.length > 0) {
+                console.log(JSON.stringify(errors));
+                throw new HttpException(400, errors as unknown as string);
+            }
+            const savedEmployee = await this.employeeService.updateEmployee(
+                id,
+                updateEmployeeDto.email,
+                updateEmployeeDto.name,
+                updateEmployeeDto.age,
+                updateEmployeeDto.address,
+                updateEmployeeDto.role
+            );
+            res.status(200).send();
+        } catch (err) {
+            console.log(err);
+            next(err);
         }
-        const savedEmployee = await this.employeeService.updateEmployee(
-            id,
-            updateEmployeeDto.email,
-            updateEmployeeDto.name,
-            updateEmployeeDto.age,
-            updateEmployeeDto.address
-        );
-        res.status(200).send();
+        
     }
 
     deleteEmployee = async (req: Request, res: Response) => {

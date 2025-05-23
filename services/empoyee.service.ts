@@ -14,6 +14,7 @@ class EmployeeService {
 
     async getEmployeeById(id: number): Promise<Employee> {
         let employee = await this.employeeRepository.findOneById(id);
+        console.log(employee)
         if(!employee) {
             throw new Error("Employee not found");
         }
@@ -38,17 +39,18 @@ class EmployeeService {
         return this.employeeRepository.create(newEmployee);
     }
 
-    async updateEmployee(id: number, email: string, name: string, age: number, address:UpdateAddressDto)  {
+    async updateEmployee(id: number, email: string, name: string, age: number, address:UpdateAddressDto, role: EmployeeRole)  {
         const existingEmployee = await this.employeeRepository.findOneById(id);
         if (existingEmployee) {
             const employee = new Employee();
             employee.name = name;
             employee.email = email;
             employee.age = age;
-            const newAddress = new Address();
-            newAddress.line1 = address.line1;
-            newAddress.pincode = address.pincode;
-            employee.address = newAddress;
+            employee.role = role;
+            const existingAddress = existingEmployee.address;
+            existingAddress.line1 = address.line1;
+            existingAddress.pincode = address.pincode;
+            employee.address = existingAddress;
             await this.employeeRepository.update(id, employee)
         }
     }

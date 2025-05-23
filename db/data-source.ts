@@ -13,7 +13,7 @@ const datasource = new DataSource({
     password: 'postgres',
     extra: { max: 5, min:2},
     synchronize: false,
-    logging: true,
+    logging: false,
     namingStrategy: new SnakeNamingStrategy(),
     entities: ["dist/entities/*.js"],
     migrations: ["dist/db/migrations/*.js"]
