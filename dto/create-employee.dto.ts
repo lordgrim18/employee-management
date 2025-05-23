@@ -28,4 +28,8 @@ export class CreateEmployeeDto {
   @IsNotEmpty()
   @IsEnum(EmployeeRole)
   role: EmployeeRole;
+
+  @IsNotEmpty()
+  @IsNumber()
+  departmentId: number;
 }

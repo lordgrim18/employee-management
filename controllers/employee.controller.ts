@@ -6,11 +6,11 @@ import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { CreateEmployeeDto } from "../dto/create-employee.dto";
 import { UpdateEmployeeDto } from "../dto/update-employee.dto";
-import { authorizationMiddleware } from "../middlewares/authorization.middleware";
+import { checkRole } from "../middlewares/authorization.middleware";
 
 class EmployeeController {
     constructor (private employeeService: EmployeeService, router: Router) {
-        router.post("/", authorizationMiddleware, this.createEmployee.bind(this));
+        router.post("/", checkRole(["HR"]), this.createEmployee.bind(this));
         router.get("/", this.getAllEmployees.bind(this));
         router.get("/:id", this.getEmployeeById.bind(this));
         router.put("/:id", this.updateEmployee);
@@ -26,12 +26,7 @@ class EmployeeController {
                     throw new HttpException(400, errors as unknown as string);
                 }
                 const savedEmployee = await this.employeeService.createEmployee(
-                    createEmployeeDto.email,
-                    createEmployeeDto.name,
-                    createEmployeeDto.age,
-                    createEmployeeDto.role,
-                    createEmployeeDto.address,
-                    createEmployeeDto.password
+                    createEmployeeDto
                 );
                 res.status(201).send(savedEmployee);
                 } catch (error) {
@@ -39,9 +34,13 @@ class EmployeeController {
                 }
     }
 
-    async getAllEmployees(req:Request, res:Response) {
-        const employees = await this.employeeService.getAllEmployees();
-        res.status(200).send(employees);
+    async getAllEmployees(req:Request, res:Response, next: NextFunction) {
+        try {
+            const employees = await this.employeeService.getAllEmployees();
+            res.status(200).send(employees);
+        } catch (err) {
+            next(err);
+        }
     }
 
     async getEmployeeById(req: Request, res: Response, next: NextFunction) {
@@ -71,11 +70,7 @@ class EmployeeController {
             }
             const savedEmployee = await this.employeeService.updateEmployee(
                 id,
-                updateEmployeeDto.email,
-                updateEmployeeDto.name,
-                updateEmployeeDto.age,
-                updateEmployeeDto.address,
-                updateEmployeeDto.role
+                updateEmployeeDto
             );
             res.status(200).send();
         } catch (err) {

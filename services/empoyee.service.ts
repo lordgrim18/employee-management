@@ -1,10 +1,12 @@
-import { CreateAddressDto } from "../dto/create-address.dto";
-import UpdateAddressDto from "../dto/update-address.dto";
 import Address from "../entities/address.entity";
 import Employee, { EmployeeRole } from "../entities/employee.entity";
 import EmployeeRepository from "../repositories/employee.repository";
 import bcrypt from 'bcrypt';
 import { LoggerService } from "./logger.service";
+import { departmentRepository } from "../routes/department.route";
+import HttpException from "../exception/httpException";
+import { CreateEmployeeDto } from "../dto/create-employee.dto";
+import { UpdateEmployeeDto } from "../dto/update-employee.dto";
 
 
 
@@ -31,41 +33,52 @@ class EmployeeService {
         return this.employeeRepository.findByEmail(email);
     }
 
-    async createEmployee(email:string, name: string, age:number, role:EmployeeRole, address:CreateAddressDto, password:string): Promise<Employee> {
+    async createEmployee(employee: CreateEmployeeDto): Promise<Employee> {
         const newAddress = new Address();
-        newAddress.line1 = address.line1;
-        newAddress.pincode = address.pincode;
+        newAddress.line1 = employee.address.line1;
+        newAddress.pincode = employee.address.pincode;
         const newEmployee = new Employee();
-        newEmployee.name = name;
-        newEmployee.email = email;
-        newEmployee.age = age;
-        newEmployee.role = role;
+        newEmployee.name = employee.name;
+        newEmployee.email = employee.email;
+        newEmployee.age = employee.age;
+        newEmployee.role = employee.role;
         newEmployee.address = newAddress;
-        newEmployee.password = await bcrypt.hash(password, 10);
+        newEmployee.password = await bcrypt.hash(employee.password, 10);
+        const employeeDepartment = await departmentRepository.findOneById(employee.departmentId)
+        if (!employeeDepartment) {
+            throw new HttpException(400, "Department not found")
+        }
+        newEmployee.departmentId = employeeDepartment.id;
         return this.employeeRepository.create(newEmployee);
     }
 
-    async updateEmployee(id: number, email: string, name: string, age: number, address:UpdateAddressDto, role: EmployeeRole)  {
+    async updateEmployee(id: number, employee: UpdateEmployeeDto)  {
         const existingEmployee = await this.employeeRepository.findOneById(id);
         if (existingEmployee) {
-            const employee = new Employee();
-            employee.name = name;
-            employee.email = email;
-            employee.age = age;
-            employee.role = role;
+            const newEmployee = new Employee();
+            newEmployee.name = employee.name;
+            newEmployee.email = employee.email;
+            newEmployee.age = employee.age;
+            newEmployee.role = employee.role;
+            const employeeDepartment = await departmentRepository.findOneById(employee.departmentId)
+            if (!employeeDepartment) {
+                throw new HttpException(400, "Department not found")
+            }
+            newEmployee.department = employeeDepartment;
             const existingAddress = existingEmployee.address;
-            existingAddress.line1 = address.line1;
-            existingAddress.pincode = address.pincode;
-            employee.address = existingAddress;
-            await this.employeeRepository.update(id, employee)
+            existingAddress.line1 = employee.address.line1;
+            existingAddress.pincode = employee.address.pincode;
+            newEmployee.address = existingAddress;
+            await this.employeeRepository.update(id, newEmployee)
         }
     }
 
     async deleteEmployee(id: number) {
         const existingEmployee = await this.employeeRepository.findOneById(id);
-        if (existingEmployee) {
-            await this.employeeRepository.delete(existingEmployee);
+        if (!existingEmployee) {
+            throw new HttpException(404, "Employee not found");
         }
+        await this.employeeRepository.delete(existingEmployee);
     }
 }
 
