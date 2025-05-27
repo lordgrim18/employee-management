@@ -31,7 +31,11 @@ class EmployeeService {
     }
 
     async getEmployeeByEmail(email: string): Promise<Employee | null> {
-        return this.employeeRepository.findByEmail(email);
+        let employee = await this.employeeRepository.findByEmail(email);
+        if (!employee) {
+            throw new Error("Employee not found");
+        }
+        return employee;
     }
 
     async createEmployee(employee: CreateEmployeeDto): Promise<Employee> {
