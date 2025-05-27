@@ -3,16 +3,19 @@ import Employee, { EmployeeRole } from "../entities/employee.entity";
 import EmployeeRepository from "../repositories/employee.repository";
 import bcrypt from 'bcrypt';
 import { LoggerService } from "./logger.service";
-import { departmentRepository } from "../routes/department.route";
 import HttpException from "../exception/httpException";
 import { CreateEmployeeDto } from "../dto/create-employee.dto";
 import { UpdateEmployeeDto } from "../dto/update-employee.dto";
+import DepartmentRepository from "../repositories/department.repository";
 
 
 
 class EmployeeService {
     private logger: LoggerService;
-    constructor(private employeeRepository: EmployeeRepository) {
+    constructor(
+        private employeeRepository: EmployeeRepository,
+        private departmentRepository: DepartmentRepository
+    ) {
         
         this.logger = LoggerService.getInstance(EmployeeService.name)
     }
@@ -54,7 +57,7 @@ class EmployeeService {
         newEmployee.status = employee.status;
         newEmployee.address = newAddress;
         newEmployee.password = await bcrypt.hash(employee.password, 10);
-        const employeeDepartment = await departmentRepository.findOneById(employee.departmentId)
+        const employeeDepartment = await this.departmentRepository.findOneById(employee.departmentId)
         if (!employeeDepartment) {
             throw new HttpException(400, "Department not found")
         }
@@ -73,7 +76,7 @@ class EmployeeService {
             newEmployee.dateOfJoining = employee.dateOfJoining;
             newEmployee.experience = employee.experience;
             newEmployee.status = employee.status;
-            const employeeDepartment = await departmentRepository.findOneById(employee.departmentId)
+            const employeeDepartment = await this.departmentRepository.findOneById(employee.departmentId)
             if (!employeeDepartment) {
                 throw new HttpException(400, "Department not found")
             }
