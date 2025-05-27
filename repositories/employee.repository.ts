@@ -10,8 +10,30 @@ class EmployeeRepository {
 
     async findMany(): Promise<Employee[]> {
         return this.repository.find({
+            select: {
+                id: true,
+                employeeId: true,
+                name: true,
+                email: true,
+                age: true,
+                dateOfJoining: true,
+                experience: true,
+                role: true,
+                status: true,
+                department: {
+                    id: true,
+                    name: true
+                },           
+                address: {
+                    line1: true,
+                    line2: true,
+                    houseNo: true,
+                    pincode: true
+                }
+            },
             relations: {
                 address: true,
+                department: true,
             }
         })
     }

@@ -13,6 +13,7 @@ import { UpdateEmployeeDto } from "../dto/update-employee.dto";
 class EmployeeService {
     private logger: LoggerService;
     constructor(private employeeRepository: EmployeeRepository) {
+        
         this.logger = LoggerService.getInstance(EmployeeService.name)
     }
 
